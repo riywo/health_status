@@ -26,8 +26,24 @@
       <div class="navbar-inner">
         <div class="brand muted">HealthStatus</div>
         <ul class="nav pull-right">
-          <li class="active"><a href="/">Home</a></li>
+          <li class="active"><a href="#timezones" data-toggle="modal"><%= @timezone %></a></li>
         </ul>
+      </div>
+    </div>
+
+    <div id="timezones" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="aaa" aria-hiden="true">
+      <div class="modal-header">
+        Choose Time Zone
+      </div>
+      <div class="modal-body">
+        <ul>
+          <% @zones.each { |k, v| %>
+          <li><a href="/?timezone=<%= v["string"] %>"><%= k %></a></li>
+          <% } %>
+        </ul>
+      </div>
+      <div class="modal-footer">
+
       </div>
     </div>
 

@@ -1,8 +1,20 @@
 require "health_status"
 require "health_status/model"
+require "erb"
 
 module HealthStatus::Web
   extend self
+
+  def timezones
+    zones = {}
+    ActiveSupport::TimeZone.zones_map.each do |k, v|
+      zones[v] = {
+        "string" => ERB::Util.u(k),
+        "offset" => Time.now.in_time_zone(k).utc_offset,
+      }
+    end
+    zones
+  end
 
   def applications(timezone)
     applications = []
