@@ -16,7 +16,7 @@ class HealthStatus::Model
 
     def fetch_current_status(args = {})
       time, current_status = validate_fetch_current_status(args)
-      { :datetime => time, :status => current_status }
+      { "datetime" => time, "status" => current_status }
     end
 
     def fetch_hourly_status(args = {})
@@ -29,7 +29,7 @@ class HealthStatus::Model
         y << half_hour_statuses.find(:all, :conditions => { :datetime => hour..(hour + @@hour - 1) }).map { |s| s.status }.max
         hour += @@hour
       end
-      { :datetime => x, :status => y }
+      { "datetime" => x, "status" => y }
     end
 
     def fetch_daily_status(args = {})
@@ -42,7 +42,7 @@ class HealthStatus::Model
         y << half_hour_statuses.find(:all, :conditions => { :datetime => day..(day + @@day - 1) }).map { |s| s.status }.max
         day += @@day
       end
-      { :datetime => x, :status => y }
+      { "datetime" => x, "status" => y }
     end
 
     private
