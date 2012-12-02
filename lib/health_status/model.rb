@@ -26,7 +26,7 @@ class HealthStatus::Model
       hour = start_time
       while hour <= end_time
         x << hour
-        y << half_hour_statuses.find(:all, :conditions => { :datetime => hour..(hour + @@hour - 1) }).map { |s| s.status }.max
+        y << half_hour_statuses.where(:datetime => hour..(hour + @@hour - 1)).maximum(:status)
         hour += @@hour
       end
       { "datetime" => x, "status" => y }
@@ -39,7 +39,7 @@ class HealthStatus::Model
       day = start_time
       while day <= end_time
         x << day
-        y << half_hour_statuses.find(:all, :conditions => { :datetime => day..(day + @@day - 1) }).map { |s| s.status }.max
+        y << half_hour_statuses.where(:datetime => day..(day + @@day - 1)).maximum(:status)
         day += @@day
       end
       { "datetime" => x, "status" => y }
