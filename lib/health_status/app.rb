@@ -5,10 +5,23 @@ require "sinatra/base"
 require "sinatra/activerecord"
 
 class HealthStatus::App < Sinatra::Base
+
+  class << self
+    attr_accessor :database_path
+  end
+
   register Sinatra::ActiveRecordExtension
 
   set :public_folder, File.expand_path("../../../public", __FILE__)
   set :views,         File.expand_path("../../../views", __FILE__)
+
+  before do
+    ActiveRecord::Base.logger = nil
+    settings.database = "sqlite3:///#{HealthStatus::App.database_path}"
+    unless File.exist?(HealthStatus::App.database_path)
+      HealthStatus::Model::Migrate.migrate
+    end
+  end
 
   get '/' do
     @apps = HealthStatus::Web.applications
