@@ -4,24 +4,24 @@ require "health_status/model"
 module HealthStatus::Web
   extend self
 
-  def get(application)
+  def applications(timezone)
+    applications = []
+    HealthStatus::Model::Application.pluck(:name).each do |name|
+      applications << get(name, timezone)
+    end
+    applications
+  end
+
+  def get(application, timezone)
     healthstatus = HealthStatus::Model::Application.find_or_initialize_by_name(application)
-    time = Time.now
+    current = Time.now.in_time_zone(timezone)
 
     res = {
       "application" => healthstatus.name,
-      "current"     => healthstatus.fetch_current_status(:time => time),
-      "hourly"      => sort_history(healthstatus.fetch_hourly_status(:end_time => time)),
-      "daily"       => sort_history(healthstatus.fetch_daily_status(:end_time => time)),
+      "current"     => healthstatus.fetch_current_status(:time => current),
+      "hourly"      => sort_history(healthstatus.fetch_hourly_status(:end_time => current)),
+      "daily"       => sort_history(healthstatus.fetch_daily_status(:end_time => current)),
     }
-  end
-
-  def applications
-    applications = []
-    HealthStatus::Model::Application.pluck(:name).each do |name|
-      applications << get(name)
-    end
-    applications
   end
 
   private

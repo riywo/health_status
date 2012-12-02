@@ -24,7 +24,8 @@ class HealthStatus::App < Sinatra::Base
   end
 
   get '/' do
-    @apps = HealthStatus::Web.applications
+    timezone = params["timezone"]
+    @apps = HealthStatus::Web.applications(timezone)
     erb :index
   end
 
