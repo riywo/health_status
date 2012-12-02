@@ -16,8 +16,8 @@ class HealthStatus::App < Sinatra::Base
   set :views,         File.expand_path("../../../views", __FILE__)
 
   before do
-    ActiveRecord::Base.logger = nil
     settings.database = "sqlite3:///#{HealthStatus::App.database_path}"
+    ActiveRecord::Base.logger = nil
     unless File.exist?(HealthStatus::App.database_path)
       HealthStatus::Model::Migrate.migrate
     end
