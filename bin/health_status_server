@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+$:.unshift File.expand_path("../../lib", __FILE__)
+begin
+  require 'vegas'
+rescue LoadError
+  require 'rubygems'
+  require 'vegas'
+end
+require "health_status/app"
+require "health_status/model"
+
+Vegas::Runner.new(HealthStatus::App, 'health_status_server', {
+  :before_run => lambda do |v|
+    HealthStatus::Model::Migrate.migrate
+    ActiveRecord::Base.logger = nil
+  end
+}) do |runner, opts, app|
+  opts.on("-d", "--database DATABASE_FILE", "path/to/sqlite.db") do |database|
+    runner.logger.info "Using database #{database}"
+    app.set :database, "sqlite3:///#{database}"
+  end
+end
