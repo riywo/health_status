@@ -1,6 +1,7 @@
 require "health_status"
 require "health_status/model"
 require "erb"
+require "cgi"
 
 module HealthStatus::Web
   extend self
@@ -14,6 +15,12 @@ module HealthStatus::Web
       }
     end
     zones
+  end
+
+  def system_timezone
+    timezones.values.each do |v|
+      return CGI.unescape(v["string"]) if v["offset"] == Time.now.utc_offset
+    end
   end
 
   def applications(timezone)
