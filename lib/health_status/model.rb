@@ -18,7 +18,8 @@ class HealthStatus::Model
       all.sort do |a, b|
         !a.fetch_current_status ?  1 :
         !b.fetch_current_status ? -1 :
-        b.fetch_current_status <=> a.fetch_current_status
+        (b.fetch_current_status <=> a.fetch_current_status).nonzero? or
+        a.name <=> b.name
       end.map { |app| app.name }
     end
 
