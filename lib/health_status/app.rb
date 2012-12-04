@@ -32,7 +32,7 @@ class HealthStatus::App < Sinatra::Base
   end
 
   get '/api/v1/application' do
-    HealthStatus::Model::Application.pluck(:name).to_json
+    HealthStatus::Model::Application.names_sort_by_status.to_json
   end
 
   get '/api/v1/application/:application' do |application|

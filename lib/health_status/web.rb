@@ -26,7 +26,7 @@ module HealthStatus::Web
 
   def applications(timezone)
     applications = []
-    HealthStatus::Model::Application.pluck(:name).each do |name|
+    HealthStatus::Model::Application.names_sort_by_status.each do |name|
       applications << get(name, timezone)
     end
     applications

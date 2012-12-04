@@ -14,6 +14,14 @@ class HealthStatus::Model
     @@hour      = 60 * 60
     @@day       = 24 * @@hour
 
+    def self.names_sort_by_status
+      all.sort do |a, b|
+        !a.fetch_current_status ?  1 :
+        !b.fetch_current_status ? -1 :
+        b.fetch_current_status <=> a.fetch_current_status
+      end.map { |app| app.name }
+    end
+
     def fetch_current_status
       if saved_at < floor_half_hour(Time.now)
         nil
