@@ -4,7 +4,7 @@ require "sinatra/activerecord/rake"
 
 class HealthStatus::Model
 
-  class Application < ActiveRecord::Base
+  class Metric < ActiveRecord::Base
     @@default_timezone = :utc
     has_many :half_hour_statuses, :order => "datetime ASC"
     before_validation :update_time
@@ -134,7 +134,7 @@ class HealthStatus::Model
 
   class HalfHourStatus < ActiveRecord::Base
     @@default_timezone = :utc
-    belongs_to :application
+    belongs_to :metric
   end
 
   module Migrate
