@@ -97,8 +97,11 @@
     <script src="js/bootstrap.js"></script>
     <script>$(function () {
       $("#timezones").on('shown', function() {
-        var modal_scrollpos = $("#timezones li.active:first").position().top - 100;
+        var modal_scrollpos = $("#timezones li.active:first").position().top - 250;
         $("#timezones .modal-body").scrollTop(modal_scrollpos);
+      });
+      $("#timezones").on('hide', function() {
+        $("#timezones .modal-body").scrollTop(0);
       });
     });</script>
 
