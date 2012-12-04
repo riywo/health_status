@@ -14,9 +14,12 @@ class HealthStatus::Model
     @@hour      = 60 * 60
     @@day       = 24 * @@hour
 
-    def fetch_current_status(args = {})
-      time, current_status = validate_fetch_current_status(args)
-      { "datetime" => time, "status" => current_status }
+    def fetch_current_status
+      if saved_at < floor_half_hour(Time.now)
+        nil
+      else
+        status
+      end
     end
 
     def fetch_hourly_status(args = {})
@@ -46,17 +49,6 @@ class HealthStatus::Model
     end
 
     private
-
-    def validate_fetch_current_status(args)
-      args[:time] ||= Time.now
-      current_status = status
-      time = saved_at.localtime(args[:time].utc_offset)
-      if floor_half_hour(args[:time]) != datetime
-        current_status = nil
-        time = args[:time]
-      end
-      return time, current_status
-    end
 
     def validate_fetch_hourly_status(args)
       args[:end_time]   ||= Time.now
@@ -104,7 +96,6 @@ class HealthStatus::Model
     def update_time
       now = Time.now.utc
       self.saved_at = now
-      self.datetime = floor_half_hour(now)
     end
 
     def update_half_hour_status

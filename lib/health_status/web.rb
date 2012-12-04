@@ -37,10 +37,10 @@ module HealthStatus::Web
     current = Time.now.in_time_zone(timezone)
 
     res = {
-      "application" => healthstatus.name,
-      "current"     => healthstatus.fetch_current_status(:time => current),
-      "hourly"      => sort_history(healthstatus.fetch_hourly_status(:end_time => current)),
-      "daily"       => sort_history(healthstatus.fetch_daily_status(:end_time => current)),
+      "application"    => healthstatus.name,
+      "current_status" => healthstatus.fetch_current_status,
+      "hourly"         => sort_history(healthstatus.fetch_hourly_status(:end_time => current)),
+      "daily"          => sort_history(healthstatus.fetch_daily_status(:end_time => current)),
     }
   end
 

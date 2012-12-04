@@ -10,3 +10,5 @@ Bundler::GemHelper.new(Dir.pwd).instance_eval do
     install_gem
   end
 end
+
+require 'sinatra/activerecord/rake'

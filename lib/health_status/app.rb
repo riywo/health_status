@@ -20,9 +20,7 @@ class HealthStatus::App < Sinatra::Base
   before do
     settings.database = "sqlite3:///#{HealthStatus::App.database_path}"
     ActiveRecord::Base.logger = nil
-    unless File.exist?(HealthStatus::App.database_path)
-      HealthStatus::Model::Migrate.migrate
-    end
+    HealthStatus::Model::Migrate.migrate
   end
 
   get '/' do
@@ -42,10 +40,10 @@ class HealthStatus::App < Sinatra::Base
     time = Time.parse(params["time"] || Time.now.to_s)
 
     response = {
-      :application => healthstatus.name,
-      :current     => healthstatus.fetch_current_status(:time => time),
-      :hourly      => healthstatus.fetch_hourly_status(:end_time => time),
-      :daily       => healthstatus.fetch_daily_status(:end_time => time),
+      :application    => healthstatus.name,
+      :current_status => healthstatus.fetch_current_status,
+      :hourly         => healthstatus.fetch_hourly_status(:end_time => time),
+      :daily          => healthstatus.fetch_daily_status(:end_time => time),
     }
 
     response.to_json

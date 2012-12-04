@@ -43,7 +43,7 @@
               <th>Daily</th>
             </tr>
             <% @apps.each { |app| %>
-            <tr class="<%= row_name(app["current"]["status"]) %>">
+            <tr class="<%= row_name(app["current_status"]) %>">
               <td>
                 <h4><%= app["application"] %></h4>
               </td>
