@@ -59,20 +59,20 @@ class HealthStatus::App < Sinatra::Base
 
   private
 
-  def label_name(status)
+  def label_class(status)
     case status
     when 1
-      "success"
+      "label label-success"
     when 2
-      "warning"
+      "label label-warning"
     when 3
-      "important"
+      "label label-important"
     else
-      "inverse"
+      "label"
     end
   end
 
-  def row_name(status)
+  def row_class(status)
     case status
     when 1
       "success"
@@ -84,4 +84,5 @@ class HealthStatus::App < Sinatra::Base
       ""
     end
   end
+
 end

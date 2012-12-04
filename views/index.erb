@@ -12,6 +12,17 @@
       .navbar-inner .brand {
         margin: 0 10px;
       }
+      td {
+        word-break: break-all;
+      }
+      td.status {
+        white-space: nowrap;
+        letter-spacing: -3px;
+      }
+      td.status span {
+        padding: 6px 2px;
+        letter-spacing: normal;
+      }
     </style>
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -31,45 +42,41 @@
       </div>
     </div>
 
-    <div class="container">
-      <div class="row">
-
+    <div class="container-fluid">
+      <div class="row-fluid">
         <div class="span12">
           <table class="table table-condensed">
-
             <tr>
               <th>Application</th>
               <th>Hourly</th>
               <th>Daily</th>
             </tr>
             <% @apps.each { |app| %>
-            <tr class="<%= row_name(app["current_status"]) %>">
+            <tr class="<%= row_class(app["current_status"]) %>">
               <td>
-                <h4><%= app["application"] %></h4>
+                <strong><%= app["application"] %></strong>
               </td>
 
-              <td>
-          <% app["hourly"].each_index { |i| d = app["hourly"][i] %>
-            <span class="label label-<%= label_name(d["status"]) %>">
-              <%= d["datetime"].strftime("%H") %>
-            </span>
-            <%= "<br/>" if i == 12 %>
-          <% } %>
+              <td class="status">
+                <% app["hourly"].each_index { |i| d = app["hourly"][i] %>
+                <span class="<%= label_class(d["status"]) %>">
+                  <%= d["datetime"].strftime("%H") %>
+                </span>
+                <% } %>
               </td>
 
-              <td>
-          <% app["daily"].each_index { |i| d = app["daily"][i] %>
-            <span class="label label-<%= label_name(d["status"]) %>">
-              <%= d["datetime"].strftime("%m/%d") %>
-            </span>
-            <%= "<br/>" if i == 3 %>
-          <% } %>
+              <td class="status">
+                <% app["daily"].each_index { |i| d = app["daily"][i] %>
+                <span class="<%= label_class(d["status"]) %>">
+                  <%= d["datetime"].strftime("%m/%d") %>
+                </span>
+                <% } %>
               </td>
             </tr>
             <% } %>
          </table>
+        </div>
       </div>
-
     </div> <!-- /container -->
 
     <div id="timezones" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="aaa" aria-hiden="true">
