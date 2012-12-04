@@ -18,6 +18,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.add_dependency 'sinatra'
+  gem.add_dependency 'sinatra-contrib'
   gem.add_dependency 'activerecord'
   gem.add_dependency 'sinatra-activerecord'
   gem.add_dependency 'sqlite3'

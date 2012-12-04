@@ -31,22 +31,6 @@
       </div>
     </div>
 
-    <div id="timezones" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="aaa" aria-hiden="true">
-      <div class="modal-header">
-        Choose Time Zone
-      </div>
-      <div class="modal-body">
-        <ul>
-          <% @zones.each { |k, v| %>
-          <li><a href="/?timezone=<%= v["string"] %>"><%= k %></a></li>
-          <% } %>
-        </ul>
-      </div>
-      <div class="modal-footer">
-
-      </div>
-    </div>
-
     <div class="container">
       <div class="row">
 
@@ -88,11 +72,36 @@
 
     </div> <!-- /container -->
 
+    <div id="timezones" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="aaa" aria-hiden="true">
+      <div class="modal-header">
+        Choose Time Zone
+      </div>
+      <div class="modal-body">
+        <ul class="nav nav-pills nav-stacked">
+          <% @zones.each { |k, v| %>
+          <li <%= "class=\"active\"" if v["string"] == @timezone  %>>
+            <a href="/?timezone=<%= v["encode"] %>"><%= k %></a>
+          </li>
+          <% } %>
+        </ul>
+      </div>
+      <div class="modal-footer">
+
+      </div>
+    </div>
+
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery.js"></script>
     <script src="js/bootstrap.js"></script>
+    <script>$(function () {
+      $("#timezones").on('shown', function() {
+        var modal_scrollpos = $("#timezones li.active:first").position().top - 100;
+        console.log(modal_scrollpos);
+        $("#timezones .modal-body").scrollTop(modal_scrollpos);
+      });
+    });</script>
 
   </body>
 </html>

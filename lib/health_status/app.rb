@@ -3,6 +3,7 @@ require "health_status/model"
 require "health_status/web"
 require "sinatra/base"
 require "sinatra/activerecord"
+require "sinatra/cookies"
 
 class HealthStatus::App < Sinatra::Base
 
@@ -10,6 +11,7 @@ class HealthStatus::App < Sinatra::Base
     attr_accessor :database_path
   end
 
+  helpers  Sinatra::Cookies
   register Sinatra::ActiveRecordExtension
 
   set :public_folder, File.expand_path("../../../public", __FILE__)
@@ -24,8 +26,9 @@ class HealthStatus::App < Sinatra::Base
   end
 
   get '/' do
+    @timezone = params["timezone"] || cookies[:timezone] || HealthStatus::Web.system_timezone
+    cookies[:timezone] = @timezone
     @zones = HealthStatus::Web.timezones
-    @timezone = params["timezone"] || HealthStatus::Web.system_timezone
     @apps  = HealthStatus::Web.applications(@timezone)
     erb :index
   end

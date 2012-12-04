@@ -10,7 +10,8 @@ module HealthStatus::Web
     zones = {}
     ActiveSupport::TimeZone.zones_map.each do |k, v|
       zones[v] = {
-        "string" => ERB::Util.u(k),
+        "string" => k,
+        "encode" => ERB::Util.u(k),
         "offset" => Time.now.in_time_zone(k).utc_offset,
       }
     end
