@@ -16,10 +16,18 @@ class HealthStatus::Model
 
     def self.names_sort_by_status
       all.sort do |a, b|
-        !a.fetch_current_status ?  1 :
-        !b.fetch_current_status ? -1 :
-        (b.fetch_current_status <=> a.fetch_current_status).nonzero? or
-        a.name <=> b.name
+        a_status = a.fetch_current_status
+        b_status = b.fetch_current_status
+        if !a_status and !b_status
+          a.name <=> b.name
+        elsif !a_status
+          1
+        elsif !b_status
+          -1
+        else
+          (b.fetch_current_status <=> a.fetch_current_status).nonzero? or
+          a.name <=> b.name
+        end
       end.map { |app| app.name }
     end
 
