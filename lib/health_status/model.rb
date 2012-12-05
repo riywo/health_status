@@ -40,6 +40,7 @@ class HealthStatus::Model
 
     def fetch_status(args = {})
       data = {
+        :id             => id,
         :name           => name,
         :current_status => fetch_current_status,
         :hourly_status  => fetch_hourly_status(args),

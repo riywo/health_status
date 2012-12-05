@@ -13,16 +13,19 @@
       .navbar-inner .brand {
         margin: 0 10px;
       }
-      td {
-        word-break: break-all;
+      div.row {
+        margin-top: 1px;
       }
-      td.status {
+      div.status {
         white-space: nowrap;
         letter-spacing: -3px;
       }
-      td.status span {
-        padding: 6px 2px;
+      div.status span {
+        padding: 5px 2px;
         letter-spacing: normal;
+      }
+      hr {
+        margin: 5px;
       }
     </style>
 
@@ -43,97 +46,88 @@
       </div>
     </div>
 
-    <div class="container-fluid">
-      <div class="row-fluid">
-        <div class="span12">
-          <table class="table table-condensed table-hover">
-            <tr>
-              <th>Service</th>
-              <th>Application</th>
-              <th>Metric</th>
-              <th>Hourly</th>
-              <th>Daily</th>
-            </tr>
-            <% @status.each { |service| %>
-            <tr class="<%= row_class(service[:current_status].to_i) %>">
-              <td>
-                <strong><%= service[:name] %></strong>
-              </td>
-              <td></td>
-              <td></td>
-
-              <td class="status">
-                <% service[:hourly_status].reverse.each { |data| %>
-                <span class="<%= label_class(data[:status]) %>">
-                  <%= data[:datetime].strftime("%H") %>
-                </span>
-                <% } %>
-              </td>
-
-              <td class="status">
-                <% service[:daily_status].reverse.each { |data| %>
-                <span class="<%= label_class(data[:status]) %>">
-                  <%= data[:datetime].strftime("%m/%d") %>
-                </span>
-                <% } %>
-              </td>
-            </tr>
-
-            <% service[:applications].each { |app| %>
-            <tr class="<%= row_class(app[:current_status]) %>">
-              <td>
-                <strong><%= service[:name] %></strong>
-              </td>
-              <td><%= app[:name] %></td>
-              <td></td>
-
-              <td class="status">
-                <% app[:hourly_status].reverse.each { |data| %>
-                <span class="<%= label_class(data[:status]) %>">
-                  <%= data[:datetime].strftime("%H") %>
-                </span>
-                <% } %>
-              </td>
-
-              <td class="status">
-                <% app[:daily_status].reverse.each { |data| %>
-                <span class="<%= label_class(data[:status]) %>">
-                  <%= data[:datetime].strftime("%m/%d") %>
-                </span>
-                <% } %>
-              </td>
-            </tr>
-
-            <% app[:metrics].each { |metric| %>
-            <tr class="<%= row_class(metric[:current_status]) %>">
-              <td>
-                <strong><%= service[:name] %></strong>
-              </td>
-              <td><%= app[:name] %></td>
-              <td><%= metric[:name] %></td>
-
-              <td class="status">
-                <% metric[:hourly_status].reverse.each { |data| %>
-                <span class="<%= label_class(data[:status]) %>">
-                  <%= data[:datetime].strftime("%H") %>
-                </span>
-                <% } %>
-              </td>
-
-              <td class="status">
-                <% metric[:daily_status].reverse.each { |data| %>
-                <span class="<%= label_class(data[:status]) %>">
-                  <%= data[:datetime].strftime("%m/%d") %>
-                </span>
-                <% } %>
-              </td>
-            </tr>
-            <% } %>
-            <% } %>
-            <% } %>
-         </table>
+    <div class="container">
+      <div class="row">
+        <div class="span2">Service/App/Metric</div>
+        <div class="span6">Hourly</div>
+        <div class="span4">Daily</div>
+      </div>
+      <% @status.each { |service| %>
+      <hr/>
+      <div class="row" id="service-<%= service[:id] %>">
+        <div class="span2">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#service-<%= service[:id] %>" href="#apps-<%= service[:id] %>">
+              <strong><%= service[:name] %></strong>
+            </a>
+        </div>
+        <div class="span6 status">
+          <% service[:hourly_status].reverse.each { |data| %>
+          <span class="<%= label_class(data[:status]) %>">
+            <%= data[:datetime].strftime("%H") %>
+          </span>
+          <% } %>
+        </div>
+        <div class="span4 status">
+          <% service[:daily_status].reverse.each { |data| %>
+          <span class="<%= label_class(data[:status]) %>">
+            <%= data[:datetime].strftime("%m/%d") %>
+          </span>
+          <% } %>
         </div>
       </div>
+
+      <div class="accordion-body collapse in" id="apps-<%= service[:id] %>">
+        <% service[:applications].each { |app| %>
+        <div class="row">
+          <div class="span2">
+              <a class="accordion-toggle" data-toggle="collapse" data-parent="#app-<%= app[:id] %>" href="#metrics-<%= app[:id] %>">
+                <strong style="padding-left:10px;"><%= app[:name] %></strong>
+              </a>
+          </div>
+          <div class="span6 status">
+            <% app[:hourly_status].reverse.each { |data| %>
+            <span class="<%= label_class(data[:status]) %>">
+              <%= data[:datetime].strftime("%H") %>
+            </span>
+            <% } %>
+          </div>
+          <div class="span4 status">
+            <% app[:daily_status].reverse.each { |data| %>
+            <span class="<%= label_class(data[:status]) %>">
+              <%= data[:datetime].strftime("%m/%d") %>
+            </span>
+            <% } %>
+          </div>
+        </div>
+
+        <div class="accordion-body collapse" id="metrics-<%= app[:id] %>">
+          <% app[:metrics].each { |metric| %>
+          <div class="row" id="metric-<%= metric[:id] %>">
+            <div class="span2">
+                  <strong style="padding-left:20px;"><%= metric[:name] %></strong>
+            </div>
+            <div class="span6 status">
+              <% metric[:hourly_status].reverse.each { |data| %>
+              <span class="<%= label_class(data[:status]) %>">
+                <%= data[:datetime].strftime("%H") %>
+              </span>
+              <% } %>
+            </div>
+            <div class="span4 status">
+              <% metric[:daily_status].reverse.each { |data| %>
+              <span class="<%= label_class(data[:status]) %>">
+                <%= data[:datetime].strftime("%m/%d") %>
+              </span>
+              <% } %>
+            </div>
+          </div>
+          <% } %>
+        </div>
+
+        <% } %>
+      </div>
+
+      <% } %>
     </div> <!-- /container -->
 
     <div id="timezones" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="aaa" aria-hiden="true">
