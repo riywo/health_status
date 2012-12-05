@@ -3,14 +3,24 @@ class AddServiceMetric < ActiveRecord::Migration
     rename_table :applications, :v1_applications
     rename_table :half_hour_statuses, :v1_half_hour_statuses
 
+    create_table :services do |t|
+      t.string     :name,             :null => false
+    end
+    add_index :services, [ :name ], :unique => true
+
+    create_table :applications do |t|
+      t.integer    :service_id,       :null => false
+      t.string     :name,             :null => false
+    end
+    add_index :applications, [ :service_id, :name ], :unique => true
+
     create_table :metrics do |t|
-      t.string     :service,          :null => false
-      t.string     :application,      :null => false
+      t.integer    :application_id,   :null => false
       t.string     :name,             :null => false
       t.integer    :status,           :null => false
       t.datetime   :saved_at,         :null => false
     end
-    add_index :metrics, [ :service, :application, :name ], :unique => true
+    add_index :metrics, [ :application_id, :name ], :unique => true
 
     create_table :half_hour_statuses do |t|
       t.integer    :metric_id,        :null => false

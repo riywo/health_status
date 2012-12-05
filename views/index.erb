@@ -48,32 +48,88 @@
         <div class="span12">
           <table class="table table-condensed table-hover">
             <tr>
+              <th>Service</th>
               <th>Application</th>
+              <th>Metric</th>
               <th>Hourly</th>
               <th>Daily</th>
             </tr>
-            <% @apps.each { |app| %>
-            <tr class="<%= row_class(app["current_status"]) %>">
+            <% @status.each { |service| %>
+            <tr class="<%= row_class(service[:current_status].to_i) %>">
               <td>
-                <strong><%= app["application"] %></strong>
+                <strong><%= service[:name] %></strong>
               </td>
+              <td></td>
+              <td></td>
 
               <td class="status">
-                <% app["hourly"].each_index { |i| d = app["hourly"][i] %>
-                <span class="<%= label_class(d["status"]) %>">
-                  <%= d["datetime"].strftime("%H") %>
+                <% service[:hourly_status].reverse.each { |data| %>
+                <span class="<%= label_class(data[:status]) %>">
+                  <%= data[:datetime].strftime("%H") %>
                 </span>
                 <% } %>
               </td>
 
               <td class="status">
-                <% app["daily"].each_index { |i| d = app["daily"][i] %>
-                <span class="<%= label_class(d["status"]) %>">
-                  <%= d["datetime"].strftime("%m/%d") %>
+                <% service[:daily_status].reverse.each { |data| %>
+                <span class="<%= label_class(data[:status]) %>">
+                  <%= data[:datetime].strftime("%m/%d") %>
                 </span>
                 <% } %>
               </td>
             </tr>
+
+            <% service[:applications].each { |app| %>
+            <tr class="<%= row_class(app[:current_status]) %>">
+              <td>
+                <strong><%= service[:name] %></strong>
+              </td>
+              <td><%= app[:name] %></td>
+              <td></td>
+
+              <td class="status">
+                <% app[:hourly_status].reverse.each { |data| %>
+                <span class="<%= label_class(data[:status]) %>">
+                  <%= data[:datetime].strftime("%H") %>
+                </span>
+                <% } %>
+              </td>
+
+              <td class="status">
+                <% app[:daily_status].reverse.each { |data| %>
+                <span class="<%= label_class(data[:status]) %>">
+                  <%= data[:datetime].strftime("%m/%d") %>
+                </span>
+                <% } %>
+              </td>
+            </tr>
+
+            <% app[:metrics].each { |metric| %>
+            <tr class="<%= row_class(metric[:current_status]) %>">
+              <td>
+                <strong><%= service[:name] %></strong>
+              </td>
+              <td><%= app[:name] %></td>
+              <td><%= metric[:name] %></td>
+
+              <td class="status">
+                <% metric[:hourly_status].reverse.each { |data| %>
+                <span class="<%= label_class(data[:status]) %>">
+                  <%= data[:datetime].strftime("%H") %>
+                </span>
+                <% } %>
+              </td>
+
+              <td class="status">
+                <% metric[:daily_status].reverse.each { |data| %>
+                <span class="<%= label_class(data[:status]) %>">
+                  <%= data[:datetime].strftime("%m/%d") %>
+                </span>
+                <% } %>
+              </td>
+            </tr>
+            <% } %>
+            <% } %>
             <% } %>
          </table>
         </div>

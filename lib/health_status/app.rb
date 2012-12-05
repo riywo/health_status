@@ -5,6 +5,8 @@ require "sinatra/base"
 require "sinatra/activerecord"
 require "sinatra/cookies"
 
+require "tapp"
+
 class HealthStatus::App < Sinatra::Base
 
   class << self
@@ -26,34 +28,22 @@ class HealthStatus::App < Sinatra::Base
   get '/' do
     @timezone = params["timezone"] || cookies[:timezone] || HealthStatus::Web.system_timezone
     cookies[:timezone] = @timezone
-    @zones = HealthStatus::Web.timezones
-    @apps  = HealthStatus::Web.applications(@timezone)
+    @zones  = HealthStatus::Web.timezones
+    @status = HealthStatus::Model::Service.fetch_all_status(:end_time => Time.now.in_time_zone(@timezone)).tapp
     erb :index
   end
 
-  get '/api/v1/application' do
-    HealthStatus::Model::Application.names_sort_by_status.to_json
-  end
-
-  get '/api/v1/application/:application' do |application|
-    healthstatus = HealthStatus::Model::Application.find_or_initialize_by_name(application)
-    time = Time.parse(params["time"] || Time.now.to_s)
-
-    response = {
-      :application    => healthstatus.name,
-      :current_status => healthstatus.fetch_current_status,
-      :hourly         => healthstatus.fetch_hourly_status(:end_time => time),
-      :daily          => healthstatus.fetch_daily_status(:end_time => time),
-    }
-
-    response.to_json
-  end
-
-  post '/api/v1/application/:application' do |application|
-    healthstatus = HealthStatus::Model::Application.find_or_initialize_by_name(application)
+  post '/api/v2/:service/:application/:metric' do |service_name, application_name, metric_name|
     raise unless params.has_key? "status"
-    healthstatus.status = params["status"]
-    healthstatus.save!
+    service = HealthStatus::Model::Service.find_or_initialize_by_name(service_name)
+    application = service.applications.find_or_initialize_by_name(application_name)
+    metric = application.metrics.find_or_initialize_by_name(metric_name)
+
+    metric.status = params["status"]
+
+    service.save!
+    application.save!
+    metric.save!
     "OK"
   end
 
