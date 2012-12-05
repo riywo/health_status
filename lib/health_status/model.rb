@@ -11,62 +11,22 @@ class HealthStatus::Model
     @@day       = 24 * @@hour
 
     def fetch_current_status
-      current_status = nil
-
-      if children.respond_to? :each
-        children.each do |child|
-          child_status = child.fetch_current_status
-          if child_status and current_status
-            current_status = child_status if current_status < child_status
-          else
-            current_status ||= child_status
-          end
-        end
-      else ## Metric
-        current_status = saved_at < floor_half_hour(Time.now) ? nil : status
-      end
-
-      current_status
+      nil if saved_at < floor_half_hour(Time.now)
+      status
     end
 
     def fetch_status_with_interval(interval, args = {})
       validate_args = validate_fetch_status(interval, args)
       interval_status = []
-
-      if children.respond_to? :each
-        children.each do |child|
-          child_status = child.fetch_status_with_interval(interval, validate_args)
-          if interval_status.size == 0
-            interval_status = child_status.clone
-          else
-            interval_status.map! do |interval_data|
-              child_data = child_status.shift
-              if !interval_data[:status]
-                child_data
-              elsif !child_data[:status]
-                interval_data
-              else
-                if interval_data[:status] < child_data[:status]
-                  child_data
-                else
-                  interval_data
-                end
-              end
-            end
-          end
-        end
-      else ## Metric
-        time = validate_args[:start_time]
-        while time <= validate_args[:end_time]
-          data = {
-            :datetime => time,
-            :status   => half_hour_statuses.where(:datetime => time..(time + interval - 1)).maximum(:status),
-          }
-          interval_status << data
-          time += interval
-        end
+      time = validate_args[:start_time]
+      while time <= validate_args[:end_time]
+        data = {
+          :datetime => time,
+          :status   => self_half_hour_statuses.where(:datetime => time..(time + interval - 1)).maximum(:status),
+        }
+        interval_status << data
+        time += interval
       end
-
       interval_status
     end
 
@@ -126,17 +86,41 @@ class HealthStatus::Model
       offset = datetime.utc_offset
       Time.at(datetime.to_i - ((datetime.to_i + offset) % seconds).floor).localtime(offset)
     end
+
+    def update_half_hour_status
+      half_hour = floor_half_hour(self.saved_at)
+      current = self.self_half_hour_statuses.find(:all, :conditions => { :datetime => half_hour } ).first
+      if current
+        current.status = status if current.status < status
+        current.saved_at = self.saved_at
+        current.save
+      else
+        self_half_hour_statuses.create(
+          :status   => self.status,
+          :datetime => half_hour,
+          :saved_at => self.saved_at,
+        )
+      end
+    end
   end
 
   class Service < ActiveRecord::Base
     include AggregateStatus
 
-    has_many   :applications, :autosave => true
+    has_many   :applications
+    has_many   :service_half_hour_statuses, :order => "datetime ASC"
+
+    before_validation do self.saved_at = Time.now.utc end
+    after_save :update_half_hour_status
 
     def self.fetch_all_status(args = {})
       all.map do |service|
         service.fetch_status(args)
       end
+    end
+
+    def self_half_hour_statuses
+      service_half_hour_statuses
     end
 
     def children_name
@@ -152,7 +136,15 @@ class HealthStatus::Model
     include AggregateStatus
 
     belongs_to :service
-    has_many   :metrics, :autosave => true
+    has_many   :metrics
+    has_many   :application_half_hour_statuses, :order => "datetime ASC"
+
+    before_validation do self.saved_at = Time.now.utc end
+    after_save :update_half_hour_status
+
+    def self_half_hour_statuses
+      application_half_hour_statuses
+    end
 
     def children_name
       :metrics
@@ -167,35 +159,32 @@ class HealthStatus::Model
     include AggregateStatus
 
     belongs_to :application
-    has_many   :half_hour_statuses, :order => "datetime ASC"
+    has_many   :metric_half_hour_statuses, :order => "datetime ASC"
 
     before_validation do self.saved_at = Time.now.utc end
     after_save :update_half_hour_status
+
+    def self_half_hour_statuses
+      metric_half_hour_statuses
+    end
 
     def children
       self
     end
 
-    private
-
-    def update_half_hour_status
-      half_hour = floor_half_hour(self.saved_at)
-      current = self.half_hour_statuses.find(:all, :conditions => { :datetime => half_hour } ).first
-      if current
-        current.status = status if current.status < status
-        current.saved_at = self.saved_at
-        current.save
-      else
-        half_hour_statuses.create(
-          :status   => self.status,
-          :datetime => half_hour,
-          :saved_at => self.saved_at,
-        )
-      end
-    end
   end
 
-  class HalfHourStatus < ActiveRecord::Base
+  class ServiceHalfHourStatus < ActiveRecord::Base
+    @@default_timezone = :utc
+    belongs_to :service
+  end
+
+  class ApplicationHalfHourStatus < ActiveRecord::Base
+    @@default_timezone = :utc
+    belongs_to :application
+  end
+
+  class MetricHalfHourStatus < ActiveRecord::Base
     @@default_timezone = :utc
     belongs_to :metric
   end

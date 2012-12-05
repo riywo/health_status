@@ -37,11 +37,28 @@ class HealthStatus::App < Sinatra::Base
     application = service.applications.find_or_initialize_by_name(application_name)
     metric = application.metrics.find_or_initialize_by_name(metric_name)
 
+    if service.new_record?
+      service.status = params["status"]
+      application.status = params["status"]
+    elsif application.new_record?
+      application.status = params["status"]
+    end
     metric.status = params["status"]
-
     service.save!
     application.save!
     metric.save!
+
+    application_status = application.metrics.map { |m| m.status }.max
+    if application_status <= params["status"].to_i
+      application.status = params["status"]
+      application.save!
+    end
+
+    service_status = service.applications.map { |a| a.status }.max
+    if service_status <= params["status"].to_i
+      service.status = params["status"]
+      service.save!
+    end
     "OK"
   end
 
