@@ -5,8 +5,6 @@ require "sinatra/base"
 require "sinatra/activerecord"
 require "sinatra/cookies"
 
-require "tapp"
-
 class HealthStatus::App < Sinatra::Base
 
   class << self
@@ -29,7 +27,7 @@ class HealthStatus::App < Sinatra::Base
     @timezone = params["timezone"] || cookies[:timezone] || HealthStatus::Web.system_timezone
     cookies[:timezone] = @timezone
     @zones  = HealthStatus::Web.timezones
-    @status = HealthStatus::Model::Service.fetch_all_status(:end_time => Time.now.in_time_zone(@timezone)).tapp
+    @status = HealthStatus::Model::Service.fetch_all_status(:end_time => Time.now.in_time_zone(@timezone))
     erb :index
   end
 

@@ -2,8 +2,6 @@ require "health_status"
 require 'sinatra/activerecord'
 require "sinatra/activerecord/rake"
 
-require "tapp"
-
 class HealthStatus::Model
 
   module AggregateStatus
