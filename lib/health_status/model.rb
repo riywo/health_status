@@ -39,6 +39,7 @@ class HealthStatus::Model
     end
 
     def fetch_status(args = {})
+      depth = args[:depth].nil? ? 0 : args[:depth]
       data = {
         :id             => id,
         :name           => name,
@@ -46,7 +47,8 @@ class HealthStatus::Model
         :hourly_status  => fetch_hourly_status(args),
         :daily_status   => fetch_daily_status(args),
       }
-      if children.respond_to? :map
+      if children.respond_to? :map and depth > 0
+        args[:depth] = depth - 1
         data[children_name] = children.map do |child|
           child.fetch_status(args)
         end
@@ -116,6 +118,7 @@ class HealthStatus::Model
 
     def self.fetch_all_status(args = {})
       all.map do |service|
+        args[:depth] = 1
         service.fetch_status(args)
       end
     end

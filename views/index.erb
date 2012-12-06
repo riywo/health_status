@@ -116,6 +116,7 @@
           </div>
         </div>
 
+        <% unless app[:metrics].nil? %>
         <div class="accordion-body collapse" id="metrics-<%= app[:id] %>">
           <% app[:metrics].each { |metric| %>
           <div class="row" id="metric-<%= metric[:id] %>">
@@ -141,6 +142,7 @@
           </div>
           <% } %>
         </div>
+        <% end %>
 
         <% } %>
       </div>
