@@ -106,7 +106,7 @@ class HealthStatus::App < Sinatra::Base
     when 3
       "alert alert-error"
     else
-      ""
+      "alert alert-info"
     end
   end
 
