@@ -17,7 +17,7 @@
         white-space: nowrap;
       }
       div.row {
-        margin-top: 1px;
+        padding: 2px 0px;
       }
       div.status {
         white-space: nowrap;
@@ -28,7 +28,16 @@
         letter-spacing: normal;
       }
       hr {
-        margin: 5px;
+        margin: 10px;
+      }
+      .alert {
+        padding: 2px;
+        margin: 0px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      a.alert {
+        border: 0;
       }
     </style>
 
@@ -59,9 +68,11 @@
       <hr/>
       <div class="row" id="service-<%= service[:id] %>">
         <div class="span2 title">
-            <a class="accordion-toggle" data-toggle="collapse" data-parent="#service-<%= service[:id] %>" href="#apps-<%= service[:id] %>">
-              <strong><%= service[:name] %></strong>
+          <div class="<%= row_class(service[:current_status]) %>">
+            <a class="accordion-toggle <%= row_class(service[:current_status]) %>" data-toggle="collapse" data-parent="#service-<%= service[:id] %>" href="#apps-<%= service[:id] %>">
+              <strong style="font-size: x-large"><%= service[:name] %></strong>
             </a>
+          </div>
         </div>
         <div class="span6 status">
           <% service[:hourly_status].reverse.each { |data| %>
@@ -81,11 +92,13 @@
 
       <div class="accordion-body collapse in" id="apps-<%= service[:id] %>">
         <% service[:applications].each { |app| %>
-        <div class="row">
+        <div class="row" id="app-<%= app[:id] %>">
           <div class="span2 title">
-              <a class="accordion-toggle" data-toggle="collapse" data-parent="#app-<%= app[:id] %>" href="#metrics-<%= app[:id] %>">
-                <strong style="padding-left:10px;"><%= app[:name] %></strong>
+            <div class="<%= row_class(app[:current_status]) %>" style="margin-left:10px">
+              <a class="accordion-toggle <%= row_class(app[:current_status]) %>" data-toggle="collapse" data-parent="#app-<%= app[:id] %>" href="#metrics-<%= app[:id] %>">
+                <strong><%= app[:name] %></strong>
               </a>
+            </div>
           </div>
           <div class="span6 status">
             <% app[:hourly_status].reverse.each { |data| %>
@@ -107,7 +120,9 @@
           <% app[:metrics].each { |metric| %>
           <div class="row" id="metric-<%= metric[:id] %>">
             <div class="span2 title">
-                  <strong style="padding-left:20px;"><%= metric[:name] %></strong>
+              <div class="<%= row_class(metric[:current_status]) %>" style="margin-left:20px">
+                  <%= metric[:name] %>
+              </div>
             </div>
             <div class="span6 status">
               <% metric[:hourly_status].reverse.each { |data| %>

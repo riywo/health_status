@@ -27,7 +27,7 @@ class HealthStatus::App < Sinatra::Base
     @timezone = params["timezone"] || cookies[:timezone] || HealthStatus::Web.system_timezone
     cookies[:timezone] = @timezone
     @zones  = HealthStatus::Web.timezones
-    @status = HealthStatus::Model::Service.fetch_all_status(:end_time => Time.now.in_time_zone(@timezone))
+    @status = HealthStatus::Model::Service.readonly.fetch_all_status(:end_time => Time.now.in_time_zone(@timezone))
     erb :index
   end
 
@@ -80,11 +80,11 @@ class HealthStatus::App < Sinatra::Base
   def row_class(status)
     case status
     when 1
-      "success"
+      "alert alert-success"
     when 2
-      "warning"
+      "alert"
     when 3
-      "error"
+      "alert alert-error"
     else
       ""
     end
