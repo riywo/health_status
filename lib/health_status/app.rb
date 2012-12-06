@@ -48,14 +48,34 @@ class HealthStatus::App < Sinatra::Base
     application.save!
     metric.save!
 
-    application_status = application.metrics.map { |m| m.fetch_current_status }.max
-    if application_status <= params["status"].to_i
+    application_status = nil
+    application.metrics.each do |m|
+      status = m.fetch_current_status
+      if status.nil?
+        application_status = status
+      elsif application_status.nil?
+        application_status = status
+      elsif application_status <= status
+        application_status = status
+      end
+    end
+    if !application_status.nil? and application_status <= params["status"].to_i
       application.status = params["status"]
       application.save!
     end
 
-    service_status = service.applications.map { |a| a.fetch_current_status }.max
-    if service_status <= params["status"].to_i
+    service_status = nil
+    service.applications.each do |a|
+      status = a.fetch_current_status
+      if status.nil?
+        service_status = status
+      elsif service_status.nil?
+        service_status = status
+      elsif service_status <= status
+        service_status = status
+      end
+    end
+    if !service_status.nil? and service_status <= params["status"].to_i
       service.status = params["status"]
       service.save!
     end

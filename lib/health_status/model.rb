@@ -11,8 +11,11 @@ class HealthStatus::Model
     @@day       = 24 * @@hour
 
     def fetch_current_status
-      nil if saved_at < floor_half_hour(Time.now)
-      status
+      if saved_at < floor_half_hour(Time.now.utc)
+        nil
+      else
+        status
+      end
     end
 
     def fetch_status_with_interval(interval, args = {})
