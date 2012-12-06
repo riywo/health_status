@@ -50,6 +50,11 @@ class HealthStatus::Model
         :hourly_status  => fetch_hourly_status(args),
         :daily_status   => fetch_daily_status(args),
       }
+      data[:service_id] = service.id if respond_to? :service
+      if respond_to? :application
+        data[:service_id] = application.service.id
+        data[:application_id] = application.id
+      end
       if children.respond_to? :map and depth > 0
         args[:depth] = depth - 1
         data[children_name] = children.map do |child|
@@ -71,8 +76,8 @@ class HealthStatus::Model
       raise if offset != end_time.utc_offset
       raise if offset % @@half_hour != 0
 
-      start_time = floor_hour(start_time)
-      end_time   = floor_hour(end_time)
+      start_time = floor(start_time, interval)
+      end_time   = floor(end_time, interval)
       { :start_time => start_time, :end_time => end_time }
     end
 

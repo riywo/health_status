@@ -31,6 +31,29 @@ class HealthStatus::App < Sinatra::Base
     erb :index
   end
 
+  get '/api/v2/:service' do |service_name|
+    args = {}
+    args[:end_time] = Time.now.in_time_zone(params["timezone"])
+    service = HealthStatus::Model::Service.find_by_name(service_name)
+    service.fetch_status(args.tapp).to_json
+  end
+
+  get '/api/v2/:service/:application' do |service_name, application_name|
+    Time.zone = params["timezone"]
+    args = {}
+    args[:end_time] = Time.now.in_time_zone(params["timezone"])
+    application = HealthStatus::Model::Service.find_by_name(service_name).applications.find_by_name(application_name)
+    application.fetch_status(args).to_json
+  end
+
+  get '/api/v2/:service/:application/:metric' do |service_name, application_name, metric_name|
+    Time.zone = params["timezone"]
+    args = {}
+    args[:end_time] = Time.now.in_time_zone(params["timezone"])
+    metric = HealthStatus::Model::Service.find_by_name(service_name).applications.find_by_name(application_name).metrics.find_by_name(metric_name)
+    metric.fetch_status(args).to_json
+  end
+
   post '/api/v2/:service/:application/:metric' do |service_name, application_name, metric_name|
     raise unless params.has_key? "status"
     service = HealthStatus::Model::Service.find_or_initialize_by_name(service_name)
