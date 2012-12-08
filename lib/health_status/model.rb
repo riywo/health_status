@@ -41,24 +41,28 @@ class HealthStatus::Model
       fetch_status_with_interval(@@day, args)
     end
 
-    def fetch_status(args = {})
+    def fetch_info(args = {})
       depth = args[:depth].nil? ? 0 : args[:depth]
       data = {
         :id             => id,
         :name           => name,
         :current_status => fetch_current_status,
-        :hourly_status  => fetch_hourly_status(args),
-        :daily_status   => fetch_daily_status(args),
       }
+      if args[:with_status]
+        data[:hourly_status] = fetch_hourly_status(args)
+        data[:daily_status]  = fetch_daily_status(args)
+      end
+
       data[:service_id] = service.id if respond_to? :service
       if respond_to? :application
         data[:service_id] = application.service.id
         data[:application_id] = application.id
       end
+
       if children.respond_to? :map and depth > 0
-        args[:depth] = depth - 1
         data[children_name] = children.map do |child|
-          child.fetch_status(args)
+          args[:depth] = depth - 1
+          child.fetch_info(args)
         end
       end
       data
@@ -124,10 +128,10 @@ class HealthStatus::Model
     before_validation do self.saved_at = Time.now.utc end
     after_save :update_half_hour_status
 
-    def self.fetch_all_status(args = {})
+    def self.fetch_all_info(args = {})
       all.map do |service|
-        args[:depth] = 1
-        service.fetch_status(args)
+        args[:depth] = 2
+        service.fetch_info(args)
       end
     end
 

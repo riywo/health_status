@@ -3,7 +3,6 @@
   <head>
     <meta charset="utf-8">
     <title>HealthStatus</title>
-    <meta http-equiv="refresh" content="60" >
     <!-- Le styles -->
     <link href="css/bootstrap.css" rel="stylesheet">
     <style>
@@ -13,17 +12,25 @@
       .navbar-inner .brand {
         margin: 0 10px;
       }
-      div.title {
+      div.status-title {
         white-space: nowrap;
       }
       div.row {
         padding: 2px 0px;
       }
-      div.status {
+      div.status-hourly {
         white-space: nowrap;
         letter-spacing: -3px;
       }
-      div.status span {
+      div.status-daily {
+        white-space: nowrap;
+        letter-spacing: -3px;
+      }
+      div.status-hourly span {
+        padding: 5px 2px;
+        letter-spacing: normal;
+      }
+      div.status-daily span {
         padding: 5px 2px;
         letter-spacing: normal;
       }
@@ -69,77 +76,65 @@
       </div>
       <% @status.each { |service| %>
       <hr/>
-      <div class="row" id="service-<%= service[:id] %>">
-        <div class="span2 title">
-          <div class="<%= row_class(service[:current_status]) %>">
-            <a class="accordion-toggle <%= row_class(service[:current_status]) %>" data-toggle="collapse" data-parent="#service-<%= service[:id] %>" href="#apps-<%= service[:id] %>">
+      <div class="row service-row shown-row" id="service-<%= service[:id] %>" data-url="/api/v2/<%= u(service[:name]) %>?timezone=<%= u(@timezone) %>">
+        <div class="span2 status-title">
+          <div class="alert alert-info">
+            <a class="accordion-toggle alert alert-info" data-toggle="collapse" data-parent="#service-<%= service[:id] %>" href="#service-<%= service[:id] %>-applications">
               <strong style="font-size: x-large"><%= service[:name] %></strong>
             </a>
           </div>
         </div>
-        <div class="span6 status">
-          <% service[:hourly_status].reverse.each { |data| %>
-          <span class="<%= label_class(data[:status]) %>">
-            <%= data[:datetime].strftime("%H") %>
-          </span>
+        <div class="span6 status-hourly">
+          <% 25.times { %>
+          <span class="label">00</span>
           <% } %>
         </div>
-        <div class="span4 status">
-          <% service[:daily_status].reverse.each { |data| %>
-          <span class="<%= label_class(data[:status]) %>">
-            <%= data[:datetime].strftime("%m/%d") %>
-          </span>
+        <div class="span4 status-daily">
+          <% 8.times { %>
+          <span class="label">00/00</span>
           <% } %>
         </div>
       </div>
 
-      <div class="accordion-body collapse in" id="apps-<%= service[:id] %>">
-        <% service[:applications].each { |app| %>
-        <div class="row" id="app-<%= app[:id] %>">
-          <div class="span2 title">
-            <div class="<%= row_class(app[:current_status]) %>" style="margin-left:10px">
-              <a class="accordion-toggle <%= row_class(app[:current_status]) %>" data-toggle="collapse" data-parent="#app-<%= app[:id] %>" href="#metrics-<%= app[:id] %>">
-                <strong><%= app[:name] %></strong>
+      <div class="service-accordion accordion-body collapse" id="service-<%= service[:id] %>-applications">
+        <% service[:applications].each { |application| %>
+        <div class="row application-row" id="application-<%= application[:id] %>" data-url="/api/v2/<%= u(service[:name]) %>/<%= u(application[:name]) %>?timezone=<%= u(@timezone) %>">
+          <div class="span2 status-title">
+            <div class="alert alert-info" style="margin-left:10px">
+              <a class="accordion-toggle alert alert-info" data-toggle="collapse" data-parent="#application-<%= application[:id] %>" href="#application-<%= application[:id] %>-metrics">
+                <strong><%= application[:name] %></strong>
               </a>
             </div>
           </div>
-          <div class="span6 status">
-            <% app[:hourly_status].reverse.each { |data| %>
-            <span class="<%= label_class(data[:status]) %>">
-              <%= data[:datetime].strftime("%H") %>
-            </span>
+          <div class="span6 status-hourly">
+            <% 25.times { %>
+            <span class="label">00</span>
             <% } %>
           </div>
-          <div class="span4 status">
-            <% app[:daily_status].reverse.each { |data| %>
-            <span class="<%= label_class(data[:status]) %>">
-              <%= data[:datetime].strftime("%m/%d") %>
-            </span>
+          <div class="span4 status-daily">
+            <% 8.times { %>
+            <span class="label">00/00</span>
             <% } %>
           </div>
         </div>
 
-        <% unless app[:metrics].nil? %>
-        <div class="accordion-body collapse" id="metrics-<%= app[:id] %>">
-          <% app[:metrics].each { |metric| %>
-          <div class="row" id="metric-<%= metric[:id] %>">
-            <div class="span2 title">
-              <div class="<%= row_class(metric[:current_status]) %>" style="margin-left:20px">
-                  <%= metric[:name] %>
+        <% unless application[:metrics].nil? %>
+        <div class="application-accordion accordion-body collapse" id="application-<%= application[:id] %>-metrics">
+          <% application[:metrics].each { |metric| %>
+          <div class="row metric-row" id="metric-<%= metric[:id] %>" data-url="/api/v2/<%= u(service[:name]) %>/<%= u(application[:name]) %>/<%= u(metric[:name]) %>?timezone=<%= u(@timezone) %>">
+            <div class="span2 status-title">
+              <div class="alert alert-info" style="margin-left:20px">
+                <%= metric[:name] %>
               </div>
             </div>
-            <div class="span6 status">
-              <% metric[:hourly_status].reverse.each { |data| %>
-              <span class="<%= label_class(data[:status]) %>">
-                <%= data[:datetime].strftime("%H") %>
-              </span>
+            <div class="span6 status-hourly">
+              <% 25.times { %>
+              <span class="label">00</span>
               <% } %>
             </div>
-            <div class="span4 status">
-              <% metric[:daily_status].reverse.each { |data| %>
-              <span class="<%= label_class(data[:status]) %>">
-                <%= data[:datetime].strftime("%m/%d") %>
-              </span>
+            <div class="span4 status-daily">
+              <% 8.times { %>
+              <span class="label">00/00</span>
               <% } %>
             </div>
           </div>
@@ -176,15 +171,7 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery.js"></script>
     <script src="js/bootstrap.js"></script>
-    <script>$(function () {
-      $("#timezones").on('shown', function() {
-        var modal_scrollpos = $("#timezones li.active:first").position().top - 250;
-        $("#timezones .modal-body").scrollTop(modal_scrollpos);
-      });
-      $("#timezones").on('hide', function() {
-        $("#timezones .modal-body").scrollTop(0);
-      });
-    });</script>
+    <script src="js/main.js"></script>
 
   </body>
 </html>

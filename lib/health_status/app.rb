@@ -11,7 +11,7 @@ class HealthStatus::App < Sinatra::Base
     attr_accessor :database_path
   end
 
-  helpers  Sinatra::Cookies
+  helpers  Sinatra::Cookies, ERB::Util
   register Sinatra::ActiveRecordExtension
 
   set :public_folder, File.expand_path("../../../public", __FILE__)
@@ -27,31 +27,34 @@ class HealthStatus::App < Sinatra::Base
     @timezone = params["timezone"] || cookies[:timezone] || HealthStatus::Web.system_timezone
     cookies[:timezone] = @timezone
     @zones  = HealthStatus::Web.timezones
-    @status = HealthStatus::Model::Service.readonly.fetch_all_status(:end_time => Time.now.in_time_zone(@timezone))
+    @status = HealthStatus::Model::Service.readonly.fetch_all_info(:end_time => Time.now.in_time_zone(@timezone))
     erb :index
   end
 
   get '/api/v2/:service' do |service_name|
     args = {}
     args[:end_time] = Time.now.in_time_zone(params["timezone"])
+    args[:with_status] = true
     service = HealthStatus::Model::Service.find_by_name(service_name)
-    service.fetch_status(args.tapp).to_json
+    service.fetch_info(args).to_json
   end
 
   get '/api/v2/:service/:application' do |service_name, application_name|
     Time.zone = params["timezone"]
     args = {}
     args[:end_time] = Time.now.in_time_zone(params["timezone"])
+    args[:with_status] = true
     application = HealthStatus::Model::Service.find_by_name(service_name).applications.find_by_name(application_name)
-    application.fetch_status(args).to_json
+    application.fetch_info(args).to_json
   end
 
   get '/api/v2/:service/:application/:metric' do |service_name, application_name, metric_name|
     Time.zone = params["timezone"]
     args = {}
     args[:end_time] = Time.now.in_time_zone(params["timezone"])
+    args[:with_status] = true
     metric = HealthStatus::Model::Service.find_by_name(service_name).applications.find_by_name(application_name).metrics.find_by_name(metric_name)
-    metric.fetch_status(args).to_json
+    metric.fetch_info(args).to_json
   end
 
   post '/api/v2/:service/:application/:metric' do |service_name, application_name, metric_name|
@@ -103,34 +106,6 @@ class HealthStatus::App < Sinatra::Base
       service.save!
     end
     "OK"
-  end
-
-  private
-
-  def label_class(status)
-    case status
-    when 1
-      "label label-success"
-    when 2
-      "label label-warning"
-    when 3
-      "label label-important"
-    else
-      "label"
-    end
-  end
-
-  def row_class(status)
-    case status
-    when 1
-      "alert alert-success"
-    when 2
-      "alert"
-    when 3
-      "alert alert-error"
-    else
-      "alert alert-info"
-    end
   end
 
 end
