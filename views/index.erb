@@ -31,8 +31,8 @@
       <% @status.each { |service| %>
       <div class="row service-row shown-row" id="service-<%= service[:id] %>" data-url="/api/v2/<%= u(service[:name]) %>?timezone=<%= u(@timezone) %>">
         <div class="span2 status-title">
-          <div class="alert alert-info">
-            <a class="accordion-toggle alert alert-info" rel="tooltip" data-title="<%= service[:name] %>" data-placement="right" data-toggle="collapse" data-parent="#service-<%= service[:id] %>" href="#service-<%= service[:id] %>-applications">
+          <div class="alert alert-info" rel="tooltip" data-title="<%= service[:name] %>" data-placement="right">
+            <a class="accordion-toggle alert alert-info" data-toggle="collapse" data-parent="#service-<%= service[:id] %>" href="#service-<%= service[:id] %>-applications">
               <strong><%= service[:name] %></strong>
             </a>
           </div>
@@ -53,8 +53,8 @@
         <% service[:applications].each { |application| %>
         <div class="row application-row" id="application-<%= application[:id] %>" data-url="/api/v2/<%= u(service[:name]) %>/<%= u(application[:name]) %>?timezone=<%= u(@timezone) %>">
           <div class="span2 status-title">
-            <div class="alert alert-info" style="margin-left:10px">
-              <a class="accordion-toggle alert alert-info" rel="tooltip" data-title="<%= application[:name] %>" data-placement="right" data-toggle="collapse" data-parent="#application-<%= application[:id] %>" href="#application-<%= application[:id] %>-metrics">
+            <div class="alert alert-info" style="margin-left:10px" rel="tooltip" data-title="<%= application[:name] %>" data-placement="right">
+              <a class="accordion-toggle alert alert-info" data-toggle="collapse" data-parent="#application-<%= application[:id] %>" href="#application-<%= application[:id] %>-metrics">
                 <strong><%= application[:name] %></strong>
               </a>
             </div>
@@ -76,10 +76,8 @@
           <% application[:metrics].each { |metric| %>
           <div class="row metric-row" id="metric-<%= metric[:id] %>" data-url="/api/v2/<%= u(service[:name]) %>/<%= u(application[:name]) %>/<%= u(metric[:name]) %>?timezone=<%= u(@timezone) %>">
             <div class="span2 status-title">
-              <div class="alert alert-info" style="margin-left:20px">
-                <a rel="tooltip" data-title="<%= metric[:name] %>" data-placement="right" href="#">
+              <div class="alert alert-info" style="margin-left:20px" rel="tooltip" data-title="<%= metric[:name] %>" data-placement="right">
                   <%= metric[:name] %>
-                </a>
               </div>
             </div>
             <div class="span6 status-hourly">

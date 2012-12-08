@@ -1,5 +1,5 @@
 $(function () {
-  $("a[rel='tooltip']").tooltip();
+  $("div[rel='tooltip']").tooltip();
 
   $("#timezones").on('shown', function() {
     var modal_scrollpos = $("#timezones li.active:first").position().top - 250;

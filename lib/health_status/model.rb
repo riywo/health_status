@@ -18,6 +18,12 @@ class HealthStatus::Model
       end
     end
 
+    def fetch_saved_at(args)
+      end_time = args[:end_time]
+      end_time ||= Time.now
+      Time.at(saved_at.to_i).localtime(end_time.utc_offset)
+    end
+
     def fetch_status_with_interval(interval, args = {})
       validate_args = validate_fetch_status(interval, args)
       interval_status = []
@@ -47,6 +53,7 @@ class HealthStatus::Model
         :id             => id,
         :name           => name,
         :current_status => fetch_current_status,
+        :saved_at       => fetch_saved_at(args),
       }
       if args[:with_status]
         data[:hourly_status] = fetch_hourly_status(args)
