@@ -1,0 +1,45 @@
+body {
+  padding-top: 60px;
+}
+
+.navbar-inner .brand {
+  margin: 0 10px;
+}
+
+div.row {
+  padding: 2px 0px;
+}
+
+div.status-title {
+  white-space: nowrap;
+}
+
+div.status-title .alert {
+  padding: 2px;
+  margin: 0px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+div.status-title a.alert {
+  border: 0;
+}
+
+div.status-title .alert-info {
+  background: none;
+}
+
+div.status-hourly, div.status-daily {
+  white-space: nowrap;
+  letter-spacing: -3px;
+}
+
+div.status-hourly span, div.status-daily span {
+  padding: 5px 2px;
+  letter-spacing: normal;
+}
+
+hr {
+  margin: 10px;
+}
+
