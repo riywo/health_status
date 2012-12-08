@@ -78,7 +78,7 @@ $(function () {
   function update_row () {
     var refresh_time = $(this).data("refresh_time") ? $(this).data("refresh_time") : 0;
     var now = Math.round(+new Date()/1000);
-    if (refresh_time < now - 20) {
+    if (refresh_time < now - 60) {
       $(this).data("refresh_time", now);
       var url   = $(this).data("url");
       var title = $(this).find(".alert");

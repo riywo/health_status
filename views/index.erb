@@ -62,6 +62,9 @@
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="brand muted"><a href="/">HealthStatus</a></div>
+        <ul class="nav">
+          <li><a href="#refresh"><i class="icon-refresh"></i>Refresh</a></li>
+        </ul>
         <ul class="nav pull-right">
           <li class="active"><a href="#timezones" data-toggle="modal"><%= @timezone %></a></li>
         </ul>
@@ -69,18 +72,12 @@
     </div>
 
     <div class="container">
-      <div class="row">
-        <div class="span2">Service/App/Metric</div>
-        <div class="span6">Hourly</div>
-        <div class="span4">Daily</div>
-      </div>
       <% @status.each { |service| %>
-      <hr/>
       <div class="row service-row shown-row" id="service-<%= service[:id] %>" data-url="/api/v2/<%= u(service[:name]) %>?timezone=<%= u(@timezone) %>">
         <div class="span2 status-title">
           <div class="alert alert-info">
             <a class="accordion-toggle alert alert-info" data-toggle="collapse" data-parent="#service-<%= service[:id] %>" href="#service-<%= service[:id] %>-applications">
-              <strong style="font-size: x-large"><%= service[:name] %></strong>
+              <strong><%= service[:name] %></strong>
             </a>
           </div>
         </div>
@@ -144,6 +141,7 @@
 
         <% } %>
       </div>
+      <hr/>
 
       <% } %>
     </div> <!-- /container -->
