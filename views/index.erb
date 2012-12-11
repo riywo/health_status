@@ -27,13 +27,15 @@
       </div>
     </div>
 
-    <div class="container">
-      <% @status.each { |service| %>
-      <div class="row service-row shown-row" id="service-<%= service[:id] %>" data-url="/api/v2/<%= u(service[:name]) %>?timezone=<%= u(@timezone) %>">
+    <div id="main-container" class="container">
+    </div> <!-- /container -->
+
+    <div>
+      <div class="row service-row shown-row hide" id="service-ID">
         <div class="span2 status-title">
-          <div class="alert alert-info" rel="tooltip" data-title="<%= service[:name] %>" data-placement="right">
-            <a class="accordion-toggle alert alert-info" data-toggle="collapse" data-parent="#service-<%= service[:id] %>" href="#service-<%= service[:id] %>-applications">
-              <strong><%= service[:name] %></strong>
+          <div class="alert alert-info" rel="tooltip" data-placement="right">
+            <a class="accordion-toggle alert alert-info" data-toggle="collapse" data-parent="#service-ID" href="#service-ID-applications">
+              <strong></strong>
             </a>
           </div>
         </div>
@@ -49,58 +51,45 @@
         </div>
       </div>
 
-      <div class="service-accordion accordion-body collapse" id="service-<%= service[:id] %>-applications">
-        <% service[:applications].each { |application| %>
-        <div class="row application-row" id="application-<%= application[:id] %>" data-url="/api/v2/<%= u(service[:name]) %>/<%= u(application[:name]) %>?timezone=<%= u(@timezone) %>">
-          <div class="span2 status-title">
-            <div class="alert alert-info" style="margin-left:10px" rel="tooltip" data-title="<%= application[:name] %>" data-placement="right">
-              <a class="accordion-toggle alert alert-info" data-toggle="collapse" data-parent="#application-<%= application[:id] %>" href="#application-<%= application[:id] %>-metrics">
-                <strong><%= application[:name] %></strong>
-              </a>
-            </div>
-          </div>
-          <div class="span6 status-hourly">
-            <% 25.times { %>
-            <span class="label">00</span>
-            <% } %>
-          </div>
-          <div class="span4 status-daily">
-            <% 8.times { %>
-            <span class="label">00/00</span>
-            <% } %>
+      <div class="service-accordion accordion-body collapse hide" id="service-ID-applications"></div>
+      <div class="row application-row hide" id="application-ID">
+        <div class="span2 status-title">
+          <div class="alert alert-info" style="margin-left:10px" rel="tooltip" data-placement="right">
+            <a class="accordion-toggle alert alert-info" data-toggle="collapse" data-parent="#application-ID" href="#application-ID-metrics">
+              <strong></strong>
+            </a>
           </div>
         </div>
-
-        <% unless application[:metrics].nil? %>
-        <div class="application-accordion accordion-body collapse" id="application-<%= application[:id] %>-metrics">
-          <% application[:metrics].each { |metric| %>
-          <div class="row metric-row" id="metric-<%= metric[:id] %>" data-url="/api/v2/<%= u(service[:name]) %>/<%= u(application[:name]) %>/<%= u(metric[:name]) %>?timezone=<%= u(@timezone) %>">
-            <div class="span2 status-title">
-              <div class="alert alert-info" style="margin-left:20px" rel="tooltip" data-title="<%= metric[:name] %>" data-placement="right">
-                  <%= metric[:name] %>
-              </div>
-            </div>
-            <div class="span6 status-hourly">
-              <% 25.times { %>
-              <span class="label">00</span>
-              <% } %>
-            </div>
-            <div class="span4 status-daily">
-              <% 8.times { %>
-              <span class="label">00/00</span>
-              <% } %>
-            </div>
-          </div>
+        <div class="span6 status-hourly">
+          <% 25.times { %>
+          <span class="label">00</span>
           <% } %>
         </div>
-        <% end %>
-
-        <% } %>
+        <div class="span4 status-daily">
+          <% 8.times { %>
+          <span class="label">00/00</span>
+          <% } %>
+        </div>
       </div>
-      <hr/>
 
-      <% } %>
-    </div> <!-- /container -->
+      <div class="application-accordion accordion-body collapse hide" id="application-ID-metrics"></div>
+      <div class="row metric-row hide" id="metric-ID">
+        <div class="span2 status-title">
+          <div class="alert alert-info" style="margin-left:20px" rel="tooltip" data-placement="right">
+          </div>
+        </div>
+        <div class="span6 status-hourly">
+          <% 25.times { %>
+          <span class="label">00</span>
+          <% } %>
+        </div>
+        <div class="span4 status-daily">
+          <% 8.times { %>
+          <span class="label">00/00</span>
+          <% } %>
+        </div>
+      </div>
+    </div>
 
     <div id="timezones" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="aaa" aria-hiden="true">
       <div class="modal-header">

@@ -12,7 +12,11 @@ $(function () {
 
   $("div.service-accordion").on('show', function(event) {
     if ($(event.target).hasClass('service-accordion')) {
-      $(this).find("div.application-row, div.in").each(function (i, e) {
+      $(this).find("div.application-row").each(function (i, e) {
+        $(e).addClass("shown-row");
+        update_row(i, e);
+      });
+      $(this).find("div.application-accordion.in").find("div.metric-row").each(function (i, e) {
         $(e).addClass("shown-row");
         update_row(i, e);
       });
@@ -30,7 +34,10 @@ $(function () {
 
   $("div.service-accordion").on('hidden', function(event) {
     if ($(event.target).hasClass('service-accordion')) {
-      $(this).find("div.application-row, div.in").each(function () {
+      $(this).find("div.application-row").each(function () {
+        $(this).removeClass("shown-row");
+      });
+      $(this).find("div.application-accordion.in").find("div.metric-row").each(function () {
         $(this).removeClass("shown-row");
       });
     }
@@ -46,16 +53,74 @@ $(function () {
 
   $("#refresh").click(force_update_visible);
 
-  force_update_visible();
+  refresh_rows();
+
   setInterval(force_update_visible, 60000);
+
+  function refresh_rows () {
+    var url = "/api/v2/";
+    $.getJSON(url, function(json) {
+      for (var i = 0; i < json.length; i++) {
+        var service = json[i];
+        append_service($("#main-container"), service, "/api/v2");
+      }
+      force_update_visible();
+    });
+  }
+
+  function append_service (main, service, url) {
+    var service_row = $("#service-ID").clone().attr("id", "service-"+service.id).removeClass("hide");
+    service_row.data("url", url + "/" + encodeURIComponent(service.name));
+    service_row.find("div.alert").data("title", service.name).tooltip();
+    service_row.find("a.accordion-toggle").data("parent", "#service-"+service.id);
+    service_row.find("a.accordion-toggle").attr("href", "#service-"+service.id+"-applications");
+    service_row.find("a.accordion-toggle strong").text(service.name);
+    main.append(service_row);
+    main.append(applications_accordion(service, service_row.data("url")));
+  }
+
+  function append_application (accordion, application, url) {
+    var app_row = $("#application-ID").clone().attr("id", "application-"+application.id).removeClass("hide");
+    app_row.data("url", url + "/" + encodeURIComponent(application.name));
+    app_row.find("div.alert").data("title", application.name).tooltip();
+    app_row.find("a.accordion-toggle").data("parent", "#application-"+application.id);
+    app_row.find("a.accordion-toggle").attr("href", "#application-"+application.id+"-metrics");
+    app_row.find("a.accordion-toggle strong").text(application.name);
+    accordion.append(app_row);
+    accordion.append(metrics_accordion(application, app_row.data("url")));
+  }
+
+  function append_metric (accordion, metric, url) {
+    var metric_row = $("#metric-ID").clone().attr("id", "metric-"+metric.id).removeClass("hide");
+    metric_row.data("url", url + "/" + encodeURIComponent(metric.name));
+    metric_row.find("div.alert").data("title", metric.name).tooltip();
+    metric_row.find("div.alert").text(metric.name);
+    accordion.append(metric_row);
+  }
+
+  function applications_accordion (service, url) {
+    var accordion = $("#service-ID-applications").clone(true).attr("id", "service-"+service.id+"-applications").removeClass("hide");
+    for (var i = 0; i < service.applications.length; i++) {
+      append_application(accordion, service.applications[i], url);
+    }
+    return accordion;
+  }
+
+  function metrics_accordion (application, url) {
+    var accordion = $("#application-ID-metrics").clone(true).attr("id", "application-"+application.id+"-metrics").removeClass("hide");
+    for (var i = 0; i < application.metrics.length; i++) {
+      append_metric(accordion, application.metrics[i], url);
+    }
+    return accordion;
+  }
 
   function force_update_visible () {
 console.log("force_update_visible");
-    $("div.shown-row").each(force_update_row);
+    $("div.container div.shown-row").each(force_update_row);
   }
   function update_visible () {
 console.log("update_visible");
-    $("div.shown-row").each(update_row);
+    $("div.container div.shown-row").each(update_row);
   }
 
   function force_update_row (index, element) {

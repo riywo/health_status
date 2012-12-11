@@ -27,7 +27,6 @@ class HealthStatus::App < Sinatra::Base
     @timezone = params["timezone"] || cookies[:timezone] || HealthStatus::Web.system_timezone
     cookies[:timezone] = @timezone
     @zones  = HealthStatus::Web.timezones
-    @status = HealthStatus::Model::Service.readonly.fetch_all_info(:end_time => Time.now.in_time_zone(@timezone))
     erb :index
   end
 
