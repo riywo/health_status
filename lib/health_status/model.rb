@@ -75,6 +75,14 @@ class HealthStatus::Model
       data
     end
 
+    def save_status(new_status)
+      children_status = children.maximum(:status)
+      if !children_status.nil? and children_status <= new_status.to_i
+        self.status = new_status.to_i
+      end
+      save!
+    end
+
     private
 
     def validate_fetch_status(interval, args)
@@ -142,52 +150,25 @@ class HealthStatus::Model
       end
     end
 
-    def self.save_metric(service_name, application_name, metric_name, status)
-      service     = find_or_initialize_by_name(service_name)
-      application = service.applications.find_or_initialize_by_name(application_name)
-      metric      = application.metrics.find_or_initialize_by_name(metric_name)
+    def self.save_metric(service_name, application_name, metric_name, new_status)
+      ActiveRecord::Base.transaction do
+        service     = find_or_initialize_by_name(service_name)
+        application = service.applications.find_or_initialize_by_name(application_name)
+        metric      = application.metrics.find_or_initialize_by_name(metric_name)
 
-      if service.new_record?
-        service.status = status
-        application.status = status
-      elsif application.new_record?
-        application.status = status
-      end
-      metric.status = status
-      service.save!
-      application.save!
-      metric.save!
-
-      application_status = nil
-      application.metrics.each do |m|
-        status = m.fetch_current_status
-        if status.nil?
-          application_status = status
-        elsif application_status.nil?
-          application_status = status
-        elsif application_status <= status
-          application_status = status
+        if service.new_record?
+          service.status = new_status
+          application.status = new_status
+        elsif application.new_record?
+          application.status = new_status
         end
-      end
-      if !application_status.nil? and application_status <= status.to_i
-        application.status = status
-        application.save!
-      end
-
-      service_status = nil
-      service.applications.each do |a|
-        status = a.fetch_current_status
-        if status.nil?
-          service_status = status
-        elsif service_status.nil?
-          service_status = status
-        elsif service_status <= status
-          service_status = status
-        end
-      end
-      if !service_status.nil? and service_status <= status.to_i
-        service.status = status
+        metric.status = new_status
         service.save!
+        application.save!
+        metric.save!
+
+        application.save_status(new_status)
+        service.save_status(new_status)
       end
     end
 
