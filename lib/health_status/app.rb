@@ -59,52 +59,7 @@ class HealthStatus::App < Sinatra::Base
 
   post '/api/v2/:service/:application/:metric' do |service_name, application_name, metric_name|
     raise unless params.has_key? "status"
-    service = HealthStatus::Model::Service.find_or_initialize_by_name(service_name)
-    application = service.applications.find_or_initialize_by_name(application_name)
-    metric = application.metrics.find_or_initialize_by_name(metric_name)
-
-    if service.new_record?
-      service.status = params["status"]
-      application.status = params["status"]
-    elsif application.new_record?
-      application.status = params["status"]
-    end
-    metric.status = params["status"]
-    service.save!
-    application.save!
-    metric.save!
-
-    application_status = nil
-    application.metrics.each do |m|
-      status = m.fetch_current_status
-      if status.nil?
-        application_status = status
-      elsif application_status.nil?
-        application_status = status
-      elsif application_status <= status
-        application_status = status
-      end
-    end
-    if !application_status.nil? and application_status <= params["status"].to_i
-      application.status = params["status"]
-      application.save!
-    end
-
-    service_status = nil
-    service.applications.each do |a|
-      status = a.fetch_current_status
-      if status.nil?
-        service_status = status
-      elsif service_status.nil?
-        service_status = status
-      elsif service_status <= status
-        service_status = status
-      end
-    end
-    if !service_status.nil? and service_status <= params["status"].to_i
-      service.status = params["status"]
-      service.save!
-    end
+    HealthStatus::Model::Service.save_metric(service_name, application_name, metric_name, params["status"])
     "OK"
   end
 
