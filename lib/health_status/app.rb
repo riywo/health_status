@@ -31,6 +31,10 @@ class HealthStatus::App < Sinatra::Base
     erb :index
   end
 
+  get '/api/v2/' do
+    HealthStatus::Model::Service.readonly.fetch_all_info().to_json
+  end
+
   get '/api/v2/:service' do |service_name|
     args = {}
     args[:end_time] = Time.now.in_time_zone(params["timezone"])

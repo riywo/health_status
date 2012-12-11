@@ -55,15 +55,18 @@ class HealthStatus::Model
         :current_status => fetch_current_status,
         :saved_at       => fetch_saved_at(args),
       }
+
       if args[:with_status]
         data[:hourly_status] = fetch_hourly_status(args)
         data[:daily_status]  = fetch_daily_status(args)
       end
 
-      data[:service_id] = service.id if respond_to? :service
-      if respond_to? :application
-        data[:service_id] = application.service.id
-        data[:application_id] = application.id
+      if args[:with_id]
+        data[:service_id] = service.id if respond_to? :service
+        if respond_to? :application
+          data[:service_id] = application.service.id
+          data[:application_id] = application.id
+        end
       end
 
       if children.respond_to? :map and depth > 0
