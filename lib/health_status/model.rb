@@ -145,6 +145,7 @@ class HealthStatus::Model
 
     before_validation do self.saved_at = Time.now.utc end
     after_save :update_half_hour_status
+    validates_inclusion_of :status, :in => 1..3
 
     def self.fetch_all_info(args = {})
       all.map do |service|
@@ -197,6 +198,7 @@ class HealthStatus::Model
 
     before_validation do self.saved_at = Time.now.utc end
     after_save :update_half_hour_status
+    validates_inclusion_of :status, :in => 1..3
 
     def self_half_hour_statuses
       application_half_hour_statuses
@@ -219,6 +221,7 @@ class HealthStatus::Model
 
     before_validation do self.saved_at = Time.now.utc end
     after_save :update_half_hour_status
+    validates_inclusion_of :status, :in => 1..3
 
     def self_half_hour_statuses
       metric_half_hour_statuses
@@ -233,16 +236,19 @@ class HealthStatus::Model
   class ServiceHalfHourStatus < ActiveRecord::Base
     @@default_timezone = :utc
     belongs_to :service
+    validates_inclusion_of :status, :in => 1..3
   end
 
   class ApplicationHalfHourStatus < ActiveRecord::Base
     @@default_timezone = :utc
     belongs_to :application
+    validates_inclusion_of :status, :in => 1..3
   end
 
   class MetricHalfHourStatus < ActiveRecord::Base
     @@default_timezone = :utc
     belongs_to :metric
+    validates_inclusion_of :status, :in => 1..3
   end
 
   module Sort
