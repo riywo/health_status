@@ -19,7 +19,8 @@
       <div class="navbar-inner">
         <div class="brand muted"><a href="/">HealthStatus</a></div>
         <ul class="nav">
-          <li><a id="refresh" href="#"><i class="icon-refresh"></i>Refresh</a></li>
+          <li><button id="refresh" class="btn btn-link"><i class="icon-refresh"></i>Refresh</button></li>
+          <li><button id="test" class="btn btn-link"><i class="icon-refresh"></i>Test</button></li>
         </ul>
         <ul class="nav pull-right">
           <li class="active"><a href="#timezones" data-toggle="modal"><%= @timezone %></a></li>
@@ -34,7 +35,7 @@
       <div class="row service-row shown-row hide" id="service-ID">
         <div class="span2 status-title">
           <div class="alert alert-info" rel="tooltip" data-placement="right">
-            <a class="accordion-toggle alert alert-info" data-toggle="collapse" data-parent="#service-ID" href="#service-ID-applications">
+            <a class="accordion-toggle alert alert-info" data-toggle="collapse" data-parent="#service-ID" href="#service-ID-accordion">
               <strong></strong>
             </a>
           </div>
@@ -51,11 +52,11 @@
         </div>
       </div>
 
-      <div class="service-accordion accordion-body collapse hide" id="service-ID-applications"></div>
+      <div class="service-accordion accordion-body collapse hide" id="service-ID-accordion"></div>
       <div class="row application-row hide" id="application-ID">
         <div class="span2 status-title">
           <div class="alert alert-info" style="margin-left:10px" rel="tooltip" data-placement="right">
-            <a class="accordion-toggle alert alert-info" data-toggle="collapse" data-parent="#application-ID" href="#application-ID-metrics">
+            <a class="accordion-toggle alert alert-info" data-toggle="collapse" data-parent="#application-ID" href="#application-ID-accordion">
               <strong></strong>
             </a>
           </div>
@@ -72,7 +73,7 @@
         </div>
       </div>
 
-      <div class="application-accordion accordion-body collapse hide" id="application-ID-metrics"></div>
+      <div class="application-accordion accordion-body collapse hide" id="application-ID-accordion"></div>
       <div class="row metric-row hide" id="metric-ID">
         <div class="span2 status-title">
           <div class="alert alert-info" style="margin-left:20px" rel="tooltip" data-placement="right">

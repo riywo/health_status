@@ -140,8 +140,8 @@ class HealthStatus::Model
   class Service < ActiveRecord::Base
     include AggregateStatus
 
-    has_many   :applications
-    has_many   :service_half_hour_statuses, :order => "datetime ASC"
+    has_many   :applications, :dependent => :destroy
+    has_many   :service_half_hour_statuses, :order => "datetime ASC", :dependent => :destroy
 
     before_validation do self.saved_at = Time.now.utc end
     after_save :update_half_hour_status
@@ -192,8 +192,8 @@ class HealthStatus::Model
     include AggregateStatus
 
     belongs_to :service
-    has_many   :metrics
-    has_many   :application_half_hour_statuses, :order => "datetime ASC"
+    has_many   :metrics, :dependent => :destroy
+    has_many   :application_half_hour_statuses, :order => "datetime ASC", :dependent => :destroy
 
     before_validation do self.saved_at = Time.now.utc end
     after_save :update_half_hour_status
@@ -215,7 +215,7 @@ class HealthStatus::Model
     include AggregateStatus
 
     belongs_to :application
-    has_many   :metric_half_hour_statuses, :order => "datetime ASC"
+    has_many   :metric_half_hour_statuses, :order => "datetime ASC", :dependent => :destroy
 
     before_validation do self.saved_at = Time.now.utc end
     after_save :update_half_hour_status

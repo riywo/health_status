@@ -65,4 +65,19 @@ class HealthStatus::App < Sinatra::Base
     "OK"
   end
 
+  delete '/api/v2/:service' do |service_name|
+    HealthStatus::Model::Service.find_by_name(service_name).destroy
+    "OK"
+  end
+
+  delete '/api/v2/:service/:application' do |service_name, application_name|
+    HealthStatus::Model::Service.find_by_name(service_name).applications.find_by_name(application_name).destroy
+    "OK"
+  end
+
+  delete '/api/v2/:service/:application/:metric' do |service_name, application_name, metric_name|
+    HealthStatus::Model::Service.find_by_name(service_name).applications.find_by_name(application_name).metrics.find_by_name(metric_name).destroy
+    "OK"
+  end
+
 end

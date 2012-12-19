@@ -62,74 +62,90 @@ $(function () {
 
   refresh_rows();
 
-  setInterval(force_update_visible, 60000);
+  setInterval(refresh_rows, 60000);
 
   function refresh_rows () {
     var url = "/api/v2/";
     $.getJSON(url, function(json) {
+      var get_ids = [];
       for (var i = 0; i < json.length; i++) {
         var service = json[i];
-        append_service($("#main-container"), service, "/api/v2");
+        append_service($("#main-container"), service, "/api/v2", get_ids);
       }
+
+      var old_ids = $("#main-container").data("ids");
+      if (old_ids) {
+        for (var i = 0; i < old_ids.length; i++) {
+          if (get_ids.indexOf(old_ids[i]) == -1) {
+            $(old_ids[i]).remove();
+            $(old_ids[i]+"-accordion").remove();
+          }
+        }
+      }
+
+      $("#main-container").data("ids", get_ids);
       force_update_visible();
     });
   }
 
-  function append_service (main, service, url) {
+  function append_service (main, service, url, get_ids) {
     var service_row = $("#service-"+service.id);
+    get_ids.push("#service-"+service.id);
     if (service_row.length == 0) {
       service_row = $("#service-ID").clone().attr("id", "service-"+service.id).removeClass("hide");
       service_row.data("url", url + "/" + encodeURIComponent(service.name));
       service_row.find("div.alert").data("title", service.name).tooltip();
       service_row.find("a.accordion-toggle").data("parent", "#service-"+service.id);
-      service_row.find("a.accordion-toggle").attr("href", "#service-"+service.id+"-applications");
+      service_row.find("a.accordion-toggle").attr("href", "#service-"+service.id+"-accordion");
       service_row.find("a.accordion-toggle strong").text(service.name);
       main.append(service_row);
     }
-    append_applications_accordion(main, service, service_row.data("url"));
+    append_applications_accordion(main, service, service_row.data("url"), get_ids);
   }
 
-  function append_applications_accordion (main, service, url) {
-    var app_accordion = $("#service-"+service.id+"-applications");
+  function append_applications_accordion (main, service, url, get_ids) {
+    var app_accordion = $("#service-"+service.id+"-accordion");
     if (app_accordion.length == 0) {
-      app_accordion = $("#service-ID-applications").clone(true).attr("id", "service-"+service.id+"-applications").removeClass("hide");
+      app_accordion = $("#service-ID-accordion").clone(true).attr("id", "service-"+service.id+"-accordion").removeClass("hide");
       main.append(app_accordion);
     }
     for (var i = 0; i < service.applications.length; i++) {
-      append_application(app_accordion, service.applications[i], url);
+      append_application(app_accordion, service.applications[i], url, get_ids);
     }
   }
 
-  function append_application (app_accordion, application, url) {
+  function append_application (app_accordion, application, url, get_ids) {
     var app_row = $("#application-"+application.id);
+    get_ids.push("#application-"+application.id);
     if (app_row.length == 0) {
       app_row = $("#application-ID").clone().attr("id", "application-"+application.id).removeClass("hide");
       app_row.data("url", url + "/" + encodeURIComponent(application.name));
       app_row.find("div.alert").data("title", application.name).tooltip();
       app_row.find("a.accordion-toggle").data("parent", "#application-"+application.id);
-      app_row.find("a.accordion-toggle").attr("href", "#application-"+application.id+"-metrics");
+      app_row.find("a.accordion-toggle").attr("href", "#application-"+application.id+"-accordion");
       app_row.find("a.accordion-toggle strong").text(application.name);
       app_accordion.append(app_row);
       if (app_accordion.hasClass("in")) {
         app_row.addClass("shown-row");
       }
     }
-    append_metrics_accordion(app_accordion, application, app_row.data("url"));
+    append_metrics_accordion(app_accordion, application, app_row.data("url"), get_ids);
   }
 
-  function append_metrics_accordion (app_accordion, application, url) {
-    var metric_accordion = $("#application-"+application.id+"-metrics");
+  function append_metrics_accordion (app_accordion, application, url, get_ids) {
+    var metric_accordion = $("#application-"+application.id+"-accordion");
     if (metric_accordion.length == 0) {
-      metric_accordion = $("#application-ID-metrics").clone(true).attr("id", "application-"+application.id+"-metrics").removeClass("hide");
+      metric_accordion = $("#application-ID-accordion").clone(true).attr("id", "application-"+application.id+"-accordion").removeClass("hide");
       app_accordion.append(metric_accordion);
     }
     for (var i = 0; i < application.metrics.length; i++) {
-      append_metric(metric_accordion, application.metrics[i], url);
+      append_metric(metric_accordion, application.metrics[i], url, get_ids);
     }
   }
 
-  function append_metric (metric_accordion, metric, url) {
+  function append_metric (metric_accordion, metric, url, get_ids) {
     var metric_row = $("#metric-"+metric.id);
+    get_ids.push("#metric-"+metric.id);
     if (metric_row.length == 0) {
       metric_row = $("#metric-ID").clone().attr("id", "metric-"+metric.id).removeClass("hide");
       metric_row.data("url", url + "/" + encodeURIComponent(metric.name));
