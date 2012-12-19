@@ -57,8 +57,7 @@ $(function () {
     }
   });
 
-  $("#refresh").click(force_update_visible);
-  $("#test").click(refresh_rows);
+  $("#refresh").click(refresh_rows);
 
   refresh_rows();
 
