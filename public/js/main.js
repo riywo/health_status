@@ -10,6 +10,12 @@ $(function () {
     $("#timezones .modal-body").scrollTop(0);
   });
 
+  $.cookie("timezone", $("#timezones li.active").data("timezone"));
+
+  $("#timezones li").click(function () {
+    $.cookie("timezone", $(this).data("timezone"));
+  });
+
   $("div.service-accordion").on('show', function(event) {
     if ($(event.target).hasClass('service-accordion')) {
       $(this).find("div.application-row").each(function (i, e) {
@@ -135,7 +141,7 @@ console.log("update_visible");
     if (refresh_time < now - 60) {
       row.data("refresh_time", now);
 console.log("update " + row.attr("id") + " time: " + row.data("refresh_time"));
-      var url   = row.data("url");
+      var url   = row.data("url") + "?timezone=" + encodeURIComponent($.cookie("timezone"));
       var title = row.find(".alert");
       var hours = row.find(".status-hourly span");
       var days  = row.find(".status-daily span");

@@ -98,7 +98,7 @@
       <div class="modal-body">
         <ul class="nav nav-pills nav-stacked">
           <% @zones.each { |k, v| %>
-          <li <%= "class=\"active\"" if v["string"] == @timezone  %>>
+          <li <%= 'class="active"' if v["string"] == @timezone %> data-timezone="<%= v["string"] %>">
             <a href="/?timezone=<%= v["encode"] %>"><%= k %></a>
           </li>
           <% } %>
@@ -113,6 +113,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery.js"></script>
+    <script src="js/jquery.cookie.js"></script>
     <script src="js/bootstrap.js"></script>
     <script src="js/main.js"></script>
 

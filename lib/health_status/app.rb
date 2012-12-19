@@ -25,7 +25,6 @@ class HealthStatus::App < Sinatra::Base
 
   get '/' do
     @timezone = params["timezone"] || cookies[:timezone] || HealthStatus::Web.system_timezone
-    cookies[:timezone] = @timezone
     @zones  = HealthStatus::Web.timezones
     erb :index
   end
