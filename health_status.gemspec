@@ -3,27 +3,29 @@ lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'health_status/version'
 
-Gem::Specification.new do |gem|
-  gem.name          = "health_status"
-  gem.version       = HealthStatus::VERSION
-  gem.authors       = ["riywo"]
-  gem.email         = ["riywo.jp@gmail.com"]
-  gem.description   = %q{API server to store and visualize applications' health status}
-  gem.summary       = %q{Health status API server}
-  gem.homepage      = ""
+Gem::Specification.new do |spec|
+  spec.name          = "health_status"
+  spec.version       = HealthStatus::VERSION
+  spec.authors       = ["Ryosuke IWANAGA"]
+  spec.email         = ["riywo.jp@gmail.com"]
+  spec.description   = %q{Health status API server}
+  spec.summary       = %q{API server to store and visualize applications' health status}
+  spec.homepage      = "https://github.com/riywo/health_status"
+  spec.license       = "MIT"
 
-  gem.files         = `git ls-files`.split($/)
-  gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
-  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
-  gem.require_paths = ["lib"]
+  spec.files         = `git ls-files`.split($/)
+  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
+  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
+  spec.require_paths = ["lib"]
 
-  gem.add_dependency 'sinatra'
-  gem.add_dependency 'sinatra-contrib'
-  gem.add_dependency 'activerecord'
-  gem.add_dependency 'sinatra-activerecord'
-  gem.add_dependency 'sqlite3'
-  gem.add_dependency 'vegas'
+  spec.add_dependency 'sinatra'
+  spec.add_dependency 'sinatra-contrib'
+  spec.add_dependency 'activerecord'
+  spec.add_dependency 'sinatra-activerecord'
+  spec.add_dependency 'sqlite3'
+  spec.add_dependency 'vegas'
 
-  gem.add_development_dependency 'tapp'
-  gem.add_development_dependency 'rake'
+  spec.add_development_dependency "bundler", "~> 1.3"
+  spec.add_development_dependency 'tapp'
+  spec.add_development_dependency 'rake'
 end

@@ -1,6 +1,6 @@
 # HealthStatus
 
-TODO: Write a gem description
+API server to store and visualize applications' health status.
 
 ## Installation
 
@@ -18,7 +18,10 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+    $ health_status_server -d /path/to/sqlite.db
+
+    $ curl -v -d "status=1" localhost:5678/service1/application1/metric1
+    $ curl -v -d "status=2" localhost:5678/service1/application1/metric2
 
 ## Contributing
 
